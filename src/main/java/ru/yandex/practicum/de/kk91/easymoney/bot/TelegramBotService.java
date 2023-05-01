@@ -4,7 +4,6 @@ package ru.yandex.practicum.de.kk91.easymoney.bot;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -16,8 +15,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import reactor.core.publisher.Mono;
 import ru.yandex.practicum.de.kk91.easymoney.config.telegram.TelegramBotGateway;
-
-import java.time.Duration;
 
 @Slf4j
 @Service
