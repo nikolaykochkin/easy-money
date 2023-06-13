@@ -15,20 +15,6 @@ services:
       - smart_money_net
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./init-database.sql:/docker-entrypoint-initdb.d/init-database.sql
-
-  zookeeper:
-    image: bitnami/zookeeper:latest
-    hostname: zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    volumes:
-      - "zookeeper_data:/bitnami"
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    networks:
-      - smart_money_net
 
   kafka:
     image: bitnami/kafka:latest
@@ -39,17 +25,25 @@ services:
     volumes:
       - "kafka_data:/bitnami"
     environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,INTERNAL://:29092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-    depends_on:
-      - zookeeper
     networks:
       - smart_money_net
+
+  minio:
+    image: quay.io/minio/minio:latest
+    hostname: minio
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    networks:
+      - smart_money_net
+    volumes:
+      - ./minio/data:/data
+    command: server /data --console-address ":9090"
 
 networks:
   smart_money_net:
@@ -57,5 +51,4 @@ networks:
 
 volumes:
   postgres-data:
-  zookeeper_data:
   kafka_data:
