@@ -10,7 +10,7 @@ lazy val hadoopAwsVersion = "3.3.4"
 lazy val commonDependencies = Seq(
   libraryDependencies += "org.apache.spark" %% "spark-core" % sparkVersion,
   libraryDependencies += "org.apache.spark" %% "spark-sql" % sparkVersion,
-  //  libraryDependencies += "org.apache.spark" %% "spark-streaming" % sparkVersion,
+  libraryDependencies += "org.apache.spark" %% "spark-streaming" % sparkVersion,
   libraryDependencies += "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion,
   //  libraryDependencies += "org.apache.spark" %% "spark-hadoop-cloud" % sparkVersion,
   // https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-aws
