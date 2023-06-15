@@ -19,7 +19,7 @@ object QRDetector {
       val mat = new Mat(height, width, mode)
       mat.put(0, 0, data)
       val result = detector.detectAndDecode(mat)
-      Seq.from(result.asScala)
+      result.asScala
     } catch {
       case e: Throwable => Seq(e.getMessage)
     }

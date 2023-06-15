@@ -54,6 +54,7 @@ public class LoaderService {
         command.setState(CommandState.LOADED);
     }
 
+    // TODO: 15.6.23. Delete directory
     private void deleteLocalFile(URI uri) {
         if ("file".equalsIgnoreCase(uri.getScheme())) {
             try {
