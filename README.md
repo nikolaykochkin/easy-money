@@ -1,6 +1,21 @@
-# Умный учет финансов
+# Простой учет финансов
 
-Идея разработать сервис для учета личных финансов с умным чат-ботом на базе Telegram.
+Сервис для учета личных финансов с интерфейсом через чат-бота Telegram.
+
+## TL;DR
+
+### Start:
+
+```shell
+docker compose -f Docker-compose.yaml -p easy-money up -d --build
+```
+
+### Stop:
+
+```shell
+docker compose -f Docker-compose.yaml down
+```
+
 
 ## Принцип работы
 

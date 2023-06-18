@@ -9,13 +9,14 @@ spring:
   cloud:
     aws:
       s3:
-        endpoint: ${AWS_S3_ENDPOINT:http://127.0.0.1:9000}
-        region: ${AWS_REGION:#{'ru-central1'}}
+        path-style-access-enabled: true
+        endpoint: ${AWS_S3_ENDPOINT:http://localhost:9000}
+        region: ${AWS_REGION:local}
       credentials:
         access-key: ${AWS_ACCESS_KEY_ID}
         secret-key: ${AWS_SECRET_ACCESS_KEY}
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/easy_money}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/easy-money}
     username: ${DB_USER:admin}
     password: ${DB_PASS:P@ssw0rd}
   jpa:
@@ -27,7 +28,7 @@ spring:
       ddl-auto: validate
     show-sql: true
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9094}
     consumer:
       group-id: easy-money
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
