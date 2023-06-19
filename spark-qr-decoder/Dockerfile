@@ -1,4 +1,4 @@
-FROM sbtscala/scala-sbt:eclipse-temurin-jammy-8u352-b08_1.9.0_2.12.18 as build
+FROM sbtscala/scala-sbt:eclipse-temurin-jammy-11.0.17_8_1.9.0_2.12.18 as build
 
 WORKDIR /workspace/app
 
@@ -11,7 +11,7 @@ RUN sbt clean assembly
 
 FROM apache/spark:3.4.0
 
-ARG SPARK_HOME=/opt/spark
+ARG SPARK_HOME
 
 ARG MASTER
 ARG KAFKA_BOOTSTRAP
@@ -24,13 +24,11 @@ ARG AWS_REGION
 ARG AWS_ACCESS_KEY_ID
 ARG AWS_SECRET_ACCESS_KEY
 
-WORKDIR /opt/spark
+WORKDIR $SPARK_HOME/work-dir
+VOLUME $SPARK_HOME/work-dir
 
 COPY --from=build /workspace/app/target/scala-2.12/spark-qr-image-processor.jar .
-
-CMD ./bin/spark-submit \
-      --packages org.apache.hadoop:hadoop-aws:3.3.4 \
-      --packages org.apache.spark:spark-sql-kafka-0-10:3.4.0 \
+CMD ../bin/spark-submit \
       --class ru.yandex.practicum.de.kk91.QRImageProcessor \
       --master $MASTER \
       --deploy-mode cluster \

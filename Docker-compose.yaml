@@ -88,7 +88,7 @@ services:
       - "8080:8080"
       - "7077:7077"
     volumes:
-      - "spark-master-data:/opt"
+      - "spark-work-dir:/opt/spark/work-dir"
     environment:
       SPARK_HOME: /opt/spark
     networks:
@@ -103,7 +103,7 @@ services:
       - "8081:8081"
       - "7000:7000"
     volumes:
-      - "spark-worker-data:/opt"
+      - "spark-work-dir:/opt/spark/work-dir"
     environment:
       SPARK_HOME: /opt/spark
     networks:
@@ -112,6 +112,27 @@ services:
       - spark-master
     entrypoint: "/usr/bin/tini -s -- /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker --port 7000 spark://spark-master:7077"
 
+  spark-builder:
+    build:
+      context: ./spark-qr-decoder
+    hostname: spark-builder
+    container_name: spark-builder
+    volumes:
+      - "spark-work-dir:/opt/spark/work-dir"
+    environment:
+      SPARK_HOME: /opt/spark
+      AWS_S3_ENDPOINT: ${AWS_S3_ENDPOINT}
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_S3_BUCKET: easy-money
+      KAFKA_BOOTSTRAP: ${KAFKA_BOOTSTRAP}
+      MASTER: spark://spark-master:7077
+      PHOTO_INPUT_TOPIC: spark-photo
+      PHOTO_OUTPUT_TOPIC: spark-photo-decoded
+    networks:
+      - easy-money-net
+    restart: no
 
 networks:
   easy-money-net:
@@ -121,5 +142,4 @@ volumes:
   postgres-data:
   kafka-data:
   backend-app-data:
-  spark-master-data:
-  spark-worker-data:
+  spark-work-dir:

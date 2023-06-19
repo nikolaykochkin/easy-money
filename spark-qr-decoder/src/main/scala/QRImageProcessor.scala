@@ -4,9 +4,16 @@ import org.apache.spark.sql.catalyst.ScalaReflection
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
+import org.bytedeco.javacpp.BytePointer
+import org.bytedeco.opencv.opencv_core.Mat
+import org.bytedeco.opencv.opencv_wechat_qrcode.WeChatQRCode
+
 
 object QRImageProcessor {
-  private case class Command(id: Long, uuid: String, attachments: Seq[CommandAttachment])
+
+  private val detector = new WeChatQRCode()
+
+  private case class Command(id: Long, uuid: String, attachments: List[CommandAttachment])
 
   private case class CommandAttachment(id: Long, storageId: String)
 
@@ -25,7 +32,7 @@ object QRImageProcessor {
       .master(master)
       .getOrCreate()
 
-    spark.udf.register("decode", udf(QRCodeDetector.detectAndDecode _).asNondeterministic())
+    spark.udf.register("decode", udf(detectAndDecode _).asNondeterministic())
 
     import spark.implicits._
 
@@ -94,4 +101,18 @@ object QRImageProcessor {
       .load()
   }
 
+  private def detectAndDecode(height: Int, width: Int, mode: Int, data: Array[Byte]): List[String] = {
+    try {
+
+      val mat = new Mat(height, width, mode, new BytePointer(data: _*))
+      val result = detector.detectAndDecode(mat)
+      if (result.empty()) {
+        List.empty
+      } else {
+        result.get().map(_.getString).toList
+      }
+    } catch {
+      case e: Throwable => List(e.getMessage)
+    }
+  }
 }
