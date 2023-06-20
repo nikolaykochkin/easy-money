@@ -30,6 +30,7 @@ object QRImageProcessor {
     val spark = SparkSession.builder
       .appName("QR Image Processor")
       .master(master)
+      .config("spark.sql.streaming.kafka.useDeprecatedOffsetFetching", value = true)
       .getOrCreate()
 
     spark.udf.register("decode", udf(detectAndDecode _).asNondeterministic())

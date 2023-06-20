@@ -12,6 +12,7 @@ RUN sbt clean assembly
 FROM apache/spark:3.4.0
 
 ARG SPARK_HOME
+ENV WORK_DIR=${SPARK_HOME}/work-dir
 
 ARG MASTER
 ARG KAFKA_BOOTSTRAP
@@ -24,11 +25,15 @@ ARG AWS_REGION
 ARG AWS_ACCESS_KEY_ID
 ARG AWS_SECRET_ACCESS_KEY
 
-WORKDIR $SPARK_HOME/work-dir
-VOLUME $SPARK_HOME/work-dir
+WORKDIR $WORK_DIR
+VOLUME $WORK_DIR
 
 COPY --from=build /workspace/app/target/scala-2.12/spark-qr-image-processor.jar .
-CMD ../bin/spark-submit \
+
+#DEBUG
+#COPY target/scala-2.12/spark-qr-image-processor.jar .
+
+ENTRYPOINT ../bin/spark-submit \
       --class ru.yandex.practicum.de.kk91.QRImageProcessor \
       --master $MASTER \
       --deploy-mode cluster \
@@ -37,7 +42,8 @@ CMD ../bin/spark-submit \
       --conf spark.hadoop.fs.s3a.endpoint=$AWS_S3_ENDPOINT \
       --conf spark.hadoop.fs.s3a.endpoint.region=$AWS_REGION \
       --conf spark.hadoop.fs.s3a.path.style.access=true \
-      spark-qr-image-processor.jar \
+      --verbose \
+      file://$WORK_DIR/spark-qr-image-processor.jar \
       $MASTER \
       $KAFKA_BOOTSTRAP \
       $PHOTO_INPUT_TOPIC \

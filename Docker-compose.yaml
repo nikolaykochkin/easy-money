@@ -22,6 +22,7 @@ services:
     container_name: kafka
     ports:
       - "9092:9092"
+      - "9093:9093"
       - "9094:9094"
     volumes:
       - "kafka-data:/bitnami"
@@ -130,6 +131,9 @@ services:
       MASTER: spark://spark-master:7077
       PHOTO_INPUT_TOPIC: spark-photo
       PHOTO_OUTPUT_TOPIC: spark-photo-decoded
+    depends_on:
+      - spark-master
+      - spark-worker
     networks:
       - easy-money-net
     restart: no
