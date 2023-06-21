@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minio-config
+  namespace: easy-money
+  labels:
+    app: minio
+data:
+  MINIO_URL: "minio-service"
+  MINIO_ROOT_USER: "admin"
+  MINIO_ROOT_PASSWORD: "P@ssw0rd"

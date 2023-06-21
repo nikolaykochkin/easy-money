@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-application
+  labels:
+    app: backend-application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-application
+  template:
+    metadata:
+      name: backend-application
+      labels:
+        app: backend-application
+    spec:
+      containers:
+        - name: backend-application
+          image: backend-application:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                - name: backend-application-config
+      restartPolicy: Always
+      

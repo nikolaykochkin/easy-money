@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-application-config
+  namespace: easy-money
+  labels:
+    app: backend-application
+data:
+  SERVER_PORT: "8080"
+  AWS_REGION: "local"
+  AWS_ACCESS_KEY_ID: ""
+  AWS_SECRET_ACCESS_KEY: ""
+  DB_USER: "admin"
+  DB_PASS: "P@ssw0rd"
+  BOT_TOKEN: ""
+  BOT_NAME: "@my_shiny_public_bot"
