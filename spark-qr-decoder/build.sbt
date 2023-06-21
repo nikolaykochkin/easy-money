@@ -5,6 +5,7 @@ ThisBuild / organization := "ru.yandex.practicum.de.kk91"
 ThisBuild / assemblyMergeStrategy := {
   case "META-INF/native-image/linux-x86_64/jnijavacpp/jni-config.json" => MergeStrategy.discard
   case "META-INF/native-image/linux-x86_64/jnijavacpp/reflect-config.json" => MergeStrategy.discard
+  case "META-INF/substrate/config/reflectionconfig.json" => MergeStrategy.discard
   case "META-INF/versions/9/module-info.class" => MergeStrategy.discard
   case PathList("module-info.class") => MergeStrategy.discard
   case x =>
@@ -46,11 +47,11 @@ lazy val root = (project in file("."))
 
     libraryDependencies ++= Seq(
       "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
-      "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion,
+      "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion % "provided",
       "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
       "org.apache.spark" %% "spark-mllib" % sparkVersion % "provided",
-      "org.apache.hadoop" % "hadoop-aws" % hadoopAwsVersion,
-      "com.amazonaws" % "aws-java-sdk-bundle" % awsSdkVersion,
+      "org.apache.hadoop" % "hadoop-aws" % hadoopAwsVersion % "provided",
+      "com.amazonaws" % "aws-java-sdk-bundle" % awsSdkVersion % "provided",
       "org.bytedeco" % "javacpp" % javacppVersion classifier platform,
       "org.bytedeco" % "javacv" % javacppVersion,
       "org.bytedeco" % "opencv" % s"$opencvVersion-$javacppVersion",

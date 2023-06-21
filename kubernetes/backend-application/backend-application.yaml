@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-application
+  namespace: easy-money
   labels:
     app: backend-application
 spec:
@@ -12,15 +13,25 @@ spec:
   template:
     metadata:
       name: backend-application
+      namespace: easy-money
       labels:
         app: backend-application
     spec:
       containers:
         - name: backend-application
-          image: backend-application:latest
-          imagePullPolicy: IfNotPresent
+          image: localhost:5000/backend-application:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
-                - name: backend-application-config
+                name: backend-application-config
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: "/tmp"
+              name: backend-data
+      volumes:
+        - name: backend-data
+          persistentVolumeClaim:
+            claimName: backend-application-pvc
       restartPolicy: Always
       

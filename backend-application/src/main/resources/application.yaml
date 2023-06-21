@@ -48,7 +48,7 @@ easy-money:
   bot:
     telegram-token: ${BOT_TOKEN}
     username: ${BOT_NAME:@my_shiny_public_bot}
-    download-path: downloads
+    download-path: ${DOWNLOADS_PATH:downloads}
   messaging:
     send-debug-messages: true
     kafka:

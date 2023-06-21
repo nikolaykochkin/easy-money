@@ -16,6 +16,41 @@ docker compose -f Docker-compose.yaml -p easy-money up -d --build
 docker compose -f Docker-compose.yaml down
 ```
 
+### Build backend
+```shell
+docker build --tag $(minikube ip):5000/backend-application:latest .
+docker push $(minikube ip):5000/backend-application:latest
+```
+
+### spark submit
+
+```shell
+spark-submit \
+      --class ru.yandex.practicum.de.kk91.QRImageProcessor \
+      --master k8s://https://192.168.49.2:8443 \
+      --deploy-mode cluster \
+      --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
+      --conf spark.kubernetes.file.upload.path=local:///opt/spark/jars/spark-qr-image-processor.jar \
+      --conf spark.kubernetes.namespace=easy-money \
+      --conf spark.kubernetes.container.image=spark:latest \
+      --conf spark.hadoop.fs.s3a.access.key= \
+      --conf spark.hadoop.fs.s3a.secret.key= \
+      --conf spark.hadoop.fs.s3a.endpoint="http://minio-service.easy-money:9000" \
+      --conf spark.hadoop.fs.s3a.endpoint.region=local \
+      --conf spark.hadoop.fs.s3a.path.style.access=true \
+      --verbose \
+      local:///opt/spark/jars/spark-qr-image-processor.jar \
+      k8s://https://10.96.0.1:443 \
+      "kafka-service.easy-money:9092" \
+      spark-photo \
+      spark-photo-decoded \
+      easy-money
+```
+
+```shell
+docker-image-tool.sh -m -t latest build
+```
+
 ## Принцип работы
 
 ### Входные данные
