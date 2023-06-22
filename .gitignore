@@ -2,4 +2,4 @@
 .env
 minio
 tmp
-!/kubernetes/minio/
+!/kubernetes/minikube/minio/
