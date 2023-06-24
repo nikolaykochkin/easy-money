@@ -1,0 +1,25 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: spark-worker-svc
+  namespace: easy-money
+  labels:
+    app.kubernetes.io/component: worker
+    app.kubernetes.io/instance: spark
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: spark
+    helm.sh/chart: spark-7.0.1
+  annotations:
+    meta.helm.sh/release-name: spark
+    meta.helm.sh/release-namespace: easy-money
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: http
+  selector:
+    app.kubernetes.io/component: worker
+    app.kubernetes.io/instance: spark
+    app.kubernetes.io/name: spark
+  type: LoadBalancer

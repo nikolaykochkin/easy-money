@@ -1,0 +1,15 @@
+## Authentication parameters
+## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#setting-the-root-password-on-first-run
+## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#creating-a-database-on-first-run
+## ref: https://github.com/bitnami/containers/tree/main/bitnami/postgresql#creating-a-database-user-on-first-run
+##
+auth:
+  ## @param auth.enablePostgresUser Assign a password to the "postgres" admin user. Otherwise, remote access will be blocked for this user
+  ##
+  enablePostgresUser: true
+  ## @param auth.username Name for a custom user to create
+  ##
+  username: admin
+  ## @param auth.password Password for the custom user to create. Ignored if `auth.existingSecret` is provided
+  ##
+  database: easy-money

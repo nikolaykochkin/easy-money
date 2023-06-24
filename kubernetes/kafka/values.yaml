@@ -1,0 +1,35 @@
+## External Access to Kafka brokers configuration
+##
+externalAccess:
+  ## @param externalAccess.enabled Enable Kubernetes external cluster access to Kafka brokers
+  ##
+  enabled: true
+  ## External IPs auto-discovery configuration
+  ## An init container is used to auto-detect LB IPs or node ports by querying the K8s API
+  ## Note: RBAC might be required
+  ##
+  autoDiscovery:
+    ## @param externalAccess.autoDiscovery.enabled Enable using an init container to auto-detect external IPs/ports by querying the K8s API
+    ##
+    enabled: true
+  ## Parameters to configure K8s service(s) used to externally access Kafka brokers
+  ## Note: A new service per broker will be created
+  ##
+  service:
+    ## @param externalAccess.service.type Kubernetes Service type for external access. It can be NodePort, LoadBalancer or ClusterIP
+    ##
+    type: NodePort
+    ## @param externalAccess.service.ports.external Kafka port used for external access when service type is LoadBalancer
+    ##
+    ports:
+      external: 9094
+
+## Role Based Access Control
+## ref: https://kubernetes.io/docs/admin/authorization/rbac/
+##
+rbac:
+  ## @param rbac.create Whether to create & use RBAC resources or not
+  ## binding Kafka ServiceAccount to a role
+  ## that allows Kafka pods querying the K8s API
+  ##
+  create: true

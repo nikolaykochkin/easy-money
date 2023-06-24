@@ -18,18 +18,20 @@ object QRImageProcessor {
   private case class CommandAttachment(id: Long, storageId: String)
 
   def main(args: Array[String]): Unit = {
-    val master = args(0)
 
-    val kafkaServer = args(1)
-    val inputTopic = args(2)
-    val outputTopic = args(3)
+    val kafkaServer = sys.env.get("KAFKA_SERVERS") match {
+      case Some(value) => value
+      case None => throw new IllegalStateException("Environment variable KAFKA_SERVERS must be set.")
+    }
 
-    val s3Bucket = args(4)
+    val inputTopic = sys.env.getOrElse("INPUT_TOPIC", "spark-photo")
+    val outputTopic = sys.env.getOrElse("OUTPUT_TOPIC", "spark-photo-decoded")
+
+    val s3Bucket = sys.env.getOrElse("AWS_S3_BUCKET", "easy-money")
     val s3path = s"s3a://$s3Bucket/"
 
     val spark = SparkSession.builder
       .appName("QR Image Processor")
-      .master(master)
       .config("spark.sql.streaming.kafka.useDeprecatedOffsetFetching", value = true)
       .getOrCreate()
 

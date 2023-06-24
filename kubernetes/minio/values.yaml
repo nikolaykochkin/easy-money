@@ -1,0 +1,26 @@
+## @param mode MinIO&reg; server mode (`standalone` or `distributed`)
+## ref: https://docs.minio.io/docs/distributed-minio-quickstart-guide
+##
+mode: standalone
+## MinIO&reg; authentication parameters
+##
+auth:
+  ## @param auth.rootUser MinIO&reg; root username
+  ##
+  rootUser: admin
+  ## @param auth.rootPassword Password for MinIO&reg; root user
+  ##
+  rootPassword: "P@ssw0rd"
+
+## @param defaultBuckets Comma, semi-colon or space separated list of buckets to create at initialization (only in standalone mode)
+## e.g:
+## defaultBuckets: "my-bucket, my-second-bucket"
+##
+defaultBuckets: "easy-money"
+
+## MinIO&reg; Service properties
+##
+service:
+  ## @param service.type MinIO&reg; service type
+  ##
+  type: LoadBalancer

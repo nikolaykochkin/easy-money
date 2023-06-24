@@ -11,7 +11,7 @@ spring:
       s3:
         path-style-access-enabled: true
         endpoint: ${AWS_S3_ENDPOINT:http://localhost:9000}
-        region: ${AWS_REGION:local}
+        region: ${AWS_REGION}
       credentials:
         access-key: ${AWS_ACCESS_KEY_ID}
         secret-key: ${AWS_SECRET_ACCESS_KEY}
