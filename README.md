@@ -16,12 +16,6 @@ docker compose -f Docker-compose.yaml -p easy-money up -d --build
 docker compose -f Docker-compose.yaml down
 ```
 
-### Build backend
-```shell
-docker build --tag $(minikube ip):5000/backend-application:latest .
-docker push $(minikube ip):5000/backend-application:latest
-```
-
 ## Принцип работы
 
 ### Входные данные
@@ -80,67 +74,227 @@ docker push $(minikube ip):5000/backend-application:latest
 
 ## Общая схема системы
 
-```plantuml
-@startuml
-!pragma layout smetana
-left to right direction
-
-actor "User" as user
-cloud "Telegram" as telegram
-component "Bot" as bot
-queue "Received\nMessages" as receive
-queue "Response\nMessages" as response
-stack "S3" as s3
-
-queue "Voice" as voice
-queue "Text" as text
-queue "Image" as image
-queue "Load" as load
-component "Spark Cluster" as cluster {
-    component "Image\nProcessor" as ip
-    component "Natural\nLanguage\nProcessor" as nlp
-    component "Speech\nRecognition" as sr
-}
-queue "Handled data" as handled
-component "Application" as app {
-    component "Message\nHandler" as mh
-    component "Loader" as loader
-    component "Repository" as repo
-    component "Command\nHandler" as ch
-    mh --> repo: "Save\nraw\nmessage"
-    ch --> repo: "Save\nhandled\ndata"
-}
-database "DB" as db
-agent "Dashboard" as dashboard
-
-user --> telegram: "Voices\nPhotos\nText"
-telegram --> bot
-bot --> telegram
-telegram --> loader: "Download Files"
-bot --> receive
-receive --> mh
-loader --> s3: "Upload Files"
-loader --> voice
-loader --> image
-mh --> text
-mh --> load
-load --> loader
-image --> ip
-voice --> sr
-text --> nlp
-s3 --> sr: "Download\nVoices"
-s3 --> ip: "Download\nImages"
-sr --> text
-
-nlp --> handled
-ip --> handled
-
-handled -l-> ch
-repo --> db
-db --> dashboard
-ch -u-> response: "Send reply"
-response --> bot
-
-@enduml 
+```mermaid
+flowchart 
+    U((User))
+    Tg(((Telegram)))
+    U <--> Tg
+    Tg <--> Bot
+    U <--> D
+    subgraph Cloud
+        
+        D(((dashboard)))
+        DB[(Postgres)]
+        D <--> DB
+        subgraph Backend Kubernetes
+            K>Kafka]
+            subgraph Application
+                Bot
+                MG[Message Gateway]
+                MP[Message Processors]
+                CP[Command Processor]
+                TP[Transaction Service]
+                P[Parser]
+                L[Loader]
+                R[Repository]
+                Bot --> MP
+                MP --> CP
+                MP --> R
+                CP <--> L
+                CP --> R
+                CP <---> MG
+                CP --> TP
+                TP --> R
+                CP <--> P
+            end
+            subgraph Spark
+                direction LR
+                SN[[Spark NLP]]
+                QR[[QR Image Processor]]
+            end
+            MG <--> K
+            K <--> Spark
+        end
+        L --> S3
+        S3 --> Spark
+        S3[\ File Storage/]
+        R <--> DB
+        
+    end
+    P <--> Web((( HTTP\nmapr.tax.gov.me )))
 ```
 
+## Схема данных
+
+```mermaid
+erDiagram
+    account {
+        bigserial id PK
+        bigint owner_id FK
+        varchar account_group
+        varchar name
+        smallint account_type
+        varchar currency
+        timestamp created_date
+        timestamp last_modified_date
+    }
+    category {
+        bigserial id PK
+        varchar category_group
+        varchar name
+        timestamp created_date
+        timestamp last_modified_date
+    }
+    command {
+        bigserial id PK
+        uuid uuid UK
+        bigint telegram_message_id FK
+        smallint source
+        smallint state
+        smallint type
+        text content
+        text error
+        text sql
+        bigint user_id
+        timestamp created_date
+        timestamp last_modified_date
+    }
+    command_attachment {
+        bigserial id PK
+        uuid uuid
+        bigint command_id FK
+        varchar url
+        varchar telegram_id
+        varchar storage_id
+        varchar filename
+        bigint filesize
+        varchar mime_type
+    }
+    counterparty {
+        bigserial id PK
+        varchar counterparty_group
+        varchar name
+        varchar external_id
+        timestamp created_date
+        timestamp last_modified_date
+    }
+    invoice {
+        bigserial id PK
+        uuid uuid UK
+        bigint seller_id FK
+        bigint user_id FK
+        bigint account_id FK
+        timestamp date_time
+        varchar external_id
+        varchar url
+        text content
+        varchar currency
+        numeric sum
+        timestamp created_date
+        timestamp last_modified_date
+    }
+    invoice_item {
+        bigserial id PK
+        bigint invoice_id FK
+        bigint item_id FK
+        real quantity
+        numeric unit_price
+        numeric price
+    }
+    item {
+        bigserial id PK
+        bigint category_id FK
+        varchar external_id UK
+        varchar item_group
+        varchar name
+        timestamp created_date
+        timestamp last_modified_date
+    }
+    telegram_message {
+        bigserial id PK
+        uuid uuid UK
+        bigint user_id FK
+        timestamp message_date
+        integer update_id
+        integer message_id
+        bigint chat_id
+        bigint tg_user_id
+        varchar voice_file_path
+        varchar photo_file_path
+        text text
+        jsonb update
+        jsonb file_metadata
+        timestamp created_date
+        timestamp last_modified_date
+    }
+    transaction {
+        bigserial id PK
+        bigint account_id FK
+        bigint category_id FK
+        bigint counterparty_id FK
+        bigint invoice_id FK
+        bigint user_id FK
+        uuid uuid
+        timestamp timestamp
+        boolean draft
+        smallint transaction_type
+        varchar currency
+        numeric sum
+        varchar comment
+        timestamp created_date
+        timestamp last_modified_date
+    }
+    users {
+        bigserial id PK
+        varchar login UK
+        varchar name
+        varchar password
+        bigint telegram_id
+        timestamp created_date
+        timestamp last_modified_date
+    }
+
+    telegram_message }o--|| users: user_id
+    telegram_message ||--o{ command: telegram_message_id
+    command ||--o{ command_attachment: command_id
+    command }o--|| users: user_id
+    users ||--o{ account: owner_id
+    users ||--o{ invoice: user_id
+    account ||--o{ transaction: account_id
+    account ||--o{ invoice: account_id
+    invoice }o--|| counterparty: seller_id
+    invoice ||--|{ invoice_item: invoice_id
+    invoice_item }|--|| item: item_id
+    users ||--o{ transaction: user_id
+    transaction }o--|| category: category_id
+    category ||--o{ item: category_id
+    transaction }o--|| counterparty: counterparty_id
+    transaction }o--|| invoice: invoice_id
+```
+
+## Обработка фотографии чека с QR кодом
+
+### Фаза 1 Сохранение Телеграм сообщения (STG)
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Telegram
+    participant Bot
+    participant Gateway
+    participant 'Message\nProcessor'
+    participant Kafka
+    participant DB
+```
+
+### Фаза 2. Сохранение фото в S3
+
+```mermaid
+sequenceDiagram
+    participant CP
+    participant Loader
+    participant S3
+    participant Kafka
+    participant Spark
+    participant DB
+```
