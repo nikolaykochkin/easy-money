@@ -1,0 +1,76 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+logging:
+  level:
+    reactor.netty.http.client: INFO
+    ru.yandex.practicum.de.kk91.easymoney.bot: INFO
+
+spring:
+  cloud:
+    aws:
+      s3:
+        path-style-access-enabled: true
+        endpoint: ${AWS_S3_ENDPOINT:http://localhost:9000}
+        region: ${AWS_REGION:local}
+      credentials:
+        access-key: ${AWS_ACCESS_KEY_ID}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/easy-money}
+    username: ${DB_USER:admin}
+    password: ${DB_PASS:P@ssw0rd}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9094}
+    consumer:
+      group-id: easy-money
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.UUIDDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: ru.yandex.practicum.de.kk91.easymoney.data.*
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      key-serializer: org.apache.kafka.common.serialization.UUIDSerializer
+
+easy-money:
+  loader:
+    bucket: easy-money
+  bot:
+    telegram-token: ${BOT_TOKEN}
+    username: ${BOT_NAME:@my_shiny_public_bot}
+    download-path: ${DOWNLOADS_PATH:downloads}
+  parser:
+    montenegro:
+      baseUrl: https://mapr.tax.gov.me
+      parseUrl: https://mapr.tax.gov.me/ic/api/verifyInvoice
+      timeout: 300000
+      headers:
+        Accept: "application/json, text/plain, */*"
+        Accept-Encoding: "gzip, deflate, br"
+        Connection: "keep-alive"
+        Content-Type: "application/x-www-form-urlencoded;charset=UTF-8"
+  messaging:
+    send-debug-messages: true
+    kafka:
+      topic:
+        received-telegram-messages: received-telegram-messages
+        new-commands: new-commands
+        error-commands: error-commands
+        invoice-parsing-commands: invoice-parsing-commands
+        load-command-attachments: load-command-attachments
+        loaded-command-attachments: loaded-command-attachments
+        spark-nlp: spark-nlp
+        spark-voice: spark-voice
+        spark-photo: spark-photo
+        spark-photo-decoded: spark-photo-decoded

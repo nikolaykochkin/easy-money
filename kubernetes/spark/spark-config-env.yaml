@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spark-config-env
+  namespace: easy-money
+data:
+  KAFKA_SERVERS: "kafka:9092"
+  INPUT_TOPIC: "spark-photo"
+  OUTPUT_TOPIC: "spark-photo-decoded"
+  AWS_S3_BUCKET: "easy-money"
