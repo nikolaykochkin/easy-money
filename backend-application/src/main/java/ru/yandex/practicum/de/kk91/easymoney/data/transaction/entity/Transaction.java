@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import ru.yandex.practicum.de.kk91.easymoney.data.invoice.Invoice;
 import ru.yandex.practicum.de.kk91.easymoney.data.user.User;
 
 import java.math.BigDecimal;

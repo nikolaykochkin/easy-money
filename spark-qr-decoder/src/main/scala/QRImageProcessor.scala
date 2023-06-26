@@ -72,9 +72,11 @@ object QRImageProcessor {
       .selectExpr("key", "map(id, decoded) as attachment")
       .groupBy("key").agg(collect_list("attachment").as("attachments"))
       .selectExpr("key", "to_json(named_struct('uuid', key, 'attachments', attachments)) AS value")
+      .withColumn("headers", array(lit(("__TypeId__", "ru.yandex.practicum.de.kk91.easymoney.data.command.dto.SparkCommandDto"))))
       .write
       .format("kafka")
       .option("kafka.bootstrap.servers", kafkaServer)
+      .option("includeHeaders", value = true)
       .option("topic", outputTopic)
       .save()
   }

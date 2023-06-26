@@ -5,12 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.de.kk91.easymoney.data.command.entity.Command;
-import ru.yandex.practicum.de.kk91.easymoney.data.command.entity.CommandAttachment;
-import ru.yandex.practicum.de.kk91.easymoney.data.command.repository.CommandAttachmentRepository;
 import ru.yandex.practicum.de.kk91.easymoney.data.command.repository.CommandRepository;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -28,6 +26,10 @@ public class CommandService {
             command.getAttachments().forEach(attachment -> attachment.setCommand(command));
         }
         return commandRepository.save(command);
+    }
+
+    public Optional<Command> findCommandByUuid(UUID uuid) {
+        return commandRepository.findCommandByUuid(uuid);
     }
 
 }

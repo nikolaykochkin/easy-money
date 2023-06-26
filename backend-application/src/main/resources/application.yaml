@@ -3,6 +3,7 @@ server:
 
 logging:
   level:
+    reactor.netty.http.client: INFO
     ru.yandex.practicum.de.kk91.easymoney.bot: INFO
 
 spring:
@@ -11,7 +12,7 @@ spring:
       s3:
         path-style-access-enabled: true
         endpoint: ${AWS_S3_ENDPOINT:http://localhost:9000}
-        region: ${AWS_REGION}
+        region: ${AWS_REGION:local}
       credentials:
         access-key: ${AWS_ACCESS_KEY_ID}
         secret-key: ${AWS_SECRET_ACCESS_KEY}
@@ -49,6 +50,16 @@ easy-money:
     telegram-token: ${BOT_TOKEN}
     username: ${BOT_NAME:@my_shiny_public_bot}
     download-path: ${DOWNLOADS_PATH:downloads}
+  parser:
+    montenegro:
+      baseUrl: https://mapr.tax.gov.me
+      parseUrl: https://mapr.tax.gov.me/ic/api/verifyInvoice
+      timeout: 300000
+      headers:
+        Accept: "application/json, text/plain, */*"
+        Accept-Encoding: "gzip, deflate, br"
+        Connection: "keep-alive"
+        Content-Type: "application/x-www-form-urlencoded;charset=UTF-8"
   messaging:
     send-debug-messages: true
     kafka:
@@ -56,8 +67,10 @@ easy-money:
         received-telegram-messages: received-telegram-messages
         new-commands: new-commands
         error-commands: error-commands
+        invoice-parsing-commands: invoice-parsing-commands
         load-command-attachments: load-command-attachments
         loaded-command-attachments: loaded-command-attachments
         spark-nlp: spark-nlp
         spark-voice: spark-voice
         spark-photo: spark-photo
+        spark-photo-decoded: spark-photo-decoded

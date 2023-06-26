@@ -26,6 +26,8 @@ public class MessageGatewayKafka implements MessageGateway {
     private String loadCommandAttachmentsTopic;
     @Value("${easy-money.messaging.kafka.topic.loaded-command-attachments}")
     private String loadedCommandAttachmentsTopic;
+    @Value("${easy-money.messaging.kafka.topic.invoice-parsing-commands}")
+    private String invoiceParsingCommandsTopic;
 
     @Value("${easy-money.messaging.kafka.topic.spark-nlp}")
     private String sparkNlpTopic;
@@ -75,5 +77,10 @@ public class MessageGatewayKafka implements MessageGateway {
     @Override
     public void sparkPhotoCommand(Command command) {
         commandKafkaTemplate.send(sparkPhotoTopic, command.getUuid(), command);
+    }
+
+    @Override
+    public void handleInvoiceParsingCommand(Command command) {
+        commandKafkaTemplate.send(invoiceParsingCommandsTopic, command.getUuid(), command);
     }
 }

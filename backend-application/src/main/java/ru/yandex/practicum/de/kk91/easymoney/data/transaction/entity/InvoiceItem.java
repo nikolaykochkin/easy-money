@@ -1,10 +1,8 @@
-package ru.yandex.practicum.de.kk91.easymoney.data.invoice;
+package ru.yandex.practicum.de.kk91.easymoney.data.transaction.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -19,15 +17,18 @@ public class InvoiceItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
-    private Double quantity;
+    private String unit;
+    private BigDecimal quantity;
     private BigDecimal unitPrice;
     private BigDecimal price;
 }

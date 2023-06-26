@@ -7,6 +7,7 @@ public interface MessageGateway {
     void receiveTelegramMessage(TelegramMessage message);
 
     void handleNewCommand(Command command);
+
     void handleErrorCommand(Command command);
 
     void loadCommandAttachments(Command command);
@@ -18,4 +19,6 @@ public interface MessageGateway {
     void sparkVoiceCommand(Command command);
 
     void sparkPhotoCommand(Command command);
+
+    void handleInvoiceParsingCommand(Command command);
 }

@@ -40,10 +40,10 @@ DROP TABLE IF EXISTS command CASCADE;
 CREATE TABLE IF NOT EXISTS command
 (
     id                  BIGSERIAL PRIMARY KEY,
-    uuid                UUID UNIQUE                   NOT NULL,
-    source              SMALLINT                      NOT NULL,
-    state               SMALLINT                      NOT NULL,
-    type                SMALLINT                      NOT NULL,
+    uuid                UUID UNIQUE                  NOT NULL,
+    source              SMALLINT                     NOT NULL,
+    state               SMALLINT                     NOT NULL,
+    type                SMALLINT                     NOT NULL,
     content             TEXT,
     error               TEXT,
     sql                 TEXT,
@@ -65,7 +65,8 @@ CREATE TABLE IF NOT EXISTS command_attachment
     storage_id  VARCHAR,
     filename    VARCHAR,
     filesize    BIGINT,
-    mime_type   VARCHAR
+    mime_type   VARCHAR,
+    decoded     VARCHAR
 );
 
 CREATE INDEX command_attachment_uuid_index ON command_attachment (uuid);
@@ -86,10 +87,10 @@ DROP TABLE IF EXISTS account CASCADE;
 CREATE TABLE IF NOT EXISTS account
 (
     id                 BIGSERIAL PRIMARY KEY,
-    name               VARCHAR                       NOT NULL,
+    name               VARCHAR                      NOT NULL,
     account_group      VARCHAR,
-    account_type       SMALLINT                      NOT NULL,
-    currency           VARCHAR                       NOT NULL,
+    account_type       SMALLINT                     NOT NULL,
+    currency           VARCHAR                      NOT NULL,
     owner_id           BIGINT REFERENCES users (id) NOT NULL,
     created_date       TIMESTAMP,
     last_modified_date TIMESTAMP
@@ -112,12 +113,14 @@ DROP TABLE IF EXISTS invoice CASCADE;
 CREATE TABLE IF NOT EXISTS invoice
 (
     id                 BIGSERIAL PRIMARY KEY,
-    uuid               UUID                          NOT NULL,
-    date_time          TIMESTAMP                     NOT NULL,
+    uuid               UUID UNIQUE                  NOT NULL,
+    date_time          TIMESTAMP                    NOT NULL,
     external_id        VARCHAR,
     url                VARCHAR,
-    content            TEXT,
-    currency           VARCHAR                       NOT NULL,
+    content            JSONB,
+    currency           VARCHAR                      NOT NULL,
+    payment_method     VARCHAR                      NOT NULL,
+    account_id         BIGINT REFERENCES account (id),
     seller_id          BIGINT REFERENCES counterparty (id),
     user_id            BIGINT REFERENCES users (id) NOT NULL,
     created_date       TIMESTAMP,
@@ -144,7 +147,8 @@ CREATE TABLE IF NOT EXISTS invoice_item
     id         BIGSERIAL PRIMARY KEY,
     invoice_id BIGINT REFERENCES invoice (id) NOT NULL,
     item_id    BIGINT REFERENCES item (id)    NOT NULL,
-    quantity   REAL                           NOT NULL,
+    unit       VARCHAR                        NOT NULL,
+    quantity   NUMERIC(14, 4)                 NOT NULL,
     unit_price NUMERIC(14, 2)                 NOT NULL,
     price      NUMERIC(14, 2)                 NOT NULL
 );
@@ -165,7 +169,7 @@ CREATE TABLE IF NOT EXISTS transaction
     currency           VARCHAR                        NOT NULL,
     sum                NUMERIC(14, 2)                 NOT NULL,
     comment            VARCHAR(200)                   NOT NULL,
-    user_id            BIGINT REFERENCES users (id)  NOT NULL,
+    user_id            BIGINT REFERENCES users (id)   NOT NULL,
     created_date       TIMESTAMP,
     last_modified_date TIMESTAMP
 );

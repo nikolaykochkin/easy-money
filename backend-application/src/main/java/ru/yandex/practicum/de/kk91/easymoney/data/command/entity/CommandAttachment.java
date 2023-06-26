@@ -32,4 +32,5 @@ public class CommandAttachment {
     private String filename;
     private Long filesize;
     private String mimeType;
+    private String decoded;
 }
