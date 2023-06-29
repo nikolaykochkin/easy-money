@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -12,5 +13,5 @@ import java.util.UUID;
 @AllArgsConstructor
 public class SparkCommandDto {
     private UUID uuid;
-    private List<SparkCommandAttachmentDto> attachments;
+    private List<Map<Long, List<String>>> attachments;
 }

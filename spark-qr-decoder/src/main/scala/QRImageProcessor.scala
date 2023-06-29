@@ -13,6 +13,10 @@ object QRImageProcessor {
 
   private val detector = new WeChatQRCode()
 
+  private case class Header(key: String, value: Array[Byte])
+
+  private val typeHeader: Header = Header("__TypeId__", "ru.yandex.practicum.de.kk91.easymoney.data.command.dto.SparkCommandDto".getBytes)
+
   private case class Command(id: Long, uuid: String, attachments: List[CommandAttachment])
 
   private case class CommandAttachment(id: Long, storageId: String)
@@ -31,9 +35,7 @@ object QRImageProcessor {
     val s3path = s"s3a://$s3Bucket/"
 
     val spark = SparkSession.builder
-      .master("local")
       .appName("QR Image Processor")
-      .config("spark.sql.streaming.kafka.useDeprecatedOffsetFetching", value = true)
       .getOrCreate()
 
     spark.udf.register("decode", udf(detectAndDecode _).asNondeterministic())
@@ -45,13 +47,14 @@ object QRImageProcessor {
     val commandStream = imageCommandStream(spark, kafkaServer, inputTopic)
 
     val query = commandStream
-      .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+      .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)", "headers")
       .select($"key", from_json($"value", commandSchema).as("command"))
       .writeStream
       .foreachBatch(
         (batchDF: DataFrame, batchId: Long) =>
           if (!batchDF.isEmpty) {
             batchDF.persist()
+            batchDF.show(truncate = false)
 
             val attachments = explodeCommandAttachments(batchDF.as[(String, Command)], s3path)
             val urls = attachments.map(_.getAs[String]("origin")).collect()
@@ -73,7 +76,7 @@ object QRImageProcessor {
       .selectExpr("key", "map(id, decoded) as attachment")
       .groupBy("key").agg(collect_list("attachment").as("attachments"))
       .selectExpr("key", "to_json(named_struct('uuid', key, 'attachments', attachments)) AS value")
-      .withColumn("headers", array(lit(("__TypeId__", "ru.yandex.practicum.de.kk91.easymoney.data.command.dto.SparkCommandDto"))))
+      .withColumn("headers", array(typedlit(typeHeader)))
       .write
       .format("kafka")
       .option("kafka.bootstrap.servers", kafkaServer)
@@ -103,6 +106,7 @@ object QRImageProcessor {
     spark.readStream.format("kafka")
       .option("kafka.bootstrap.servers", kafkaServer)
       .option("subscribe", inputTopic)
+      .option("includeHeaders", value = true)
       .option("startingOffsets", "latest")
       .load()
   }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import ru.yandex.practicum.de.kk91.easymoney.bot.TelegramBotService;
 import ru.yandex.practicum.de.kk91.easymoney.data.command.CommandService;
-import ru.yandex.practicum.de.kk91.easymoney.data.command.dto.SparkCommandAttachmentDto;
 import ru.yandex.practicum.de.kk91.easymoney.data.command.dto.SparkCommandDto;
 import ru.yandex.practicum.de.kk91.easymoney.data.command.entity.Command;
 import ru.yandex.practicum.de.kk91.easymoney.data.command.entity.CommandState;
@@ -18,6 +17,7 @@ import ru.yandex.practicum.de.kk91.easymoney.data.transaction.entity.Invoice;
 import ru.yandex.practicum.de.kk91.easymoney.messaging.MessageGateway;
 import ru.yandex.practicum.de.kk91.easymoney.parser.Parser;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -96,17 +96,21 @@ public class CommandMessageProcessorKafka {
 
     @KafkaListener(topics = "${easy-money.messaging.kafka.topic.spark-photo-decoded}")
     public void processDecodedCommand(SparkCommandDto sparkCommandDto) {
+        log.info("Got decoded command: {}", sparkCommandDto);
         Optional<Command> optionalCommand = commandService.findCommandByUuid(sparkCommandDto.getUuid());
         if (optionalCommand.isEmpty()) {
             log.error("Something went wrong while process decoded command with UUID: {} not found.", sparkCommandDto.getUuid());
             return;
         }
+
         Command existingCommand = optionalCommand.get();
-        Map<Long, String> decodedData = sparkCommandDto.getAttachments().stream()
-                .collect(Collectors.toMap(SparkCommandAttachmentDto::getId, SparkCommandAttachmentDto::getDecoded));
+        Map<Long, Optional<String>> decodedData = sparkCommandDto.getAttachments().stream()
+                .flatMap(m -> m.entrySet().stream())
+                .map(e -> Map.entry(e.getKey(), e.getValue().stream().map(s -> s.replaceAll("\u0000", "")).findFirst()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         existingCommand.getAttachments()
-                .forEach(attachment -> attachment.setDecoded(decodedData.get(attachment.getId())));
+                .forEach(attachment -> attachment.setDecoded(decodedData.get(attachment.getId()).orElse(null)));
 
         existingCommand.setState(CommandState.INVOICE_PARSING);
 

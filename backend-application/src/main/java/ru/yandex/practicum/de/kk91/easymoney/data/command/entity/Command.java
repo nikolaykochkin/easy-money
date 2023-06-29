@@ -59,7 +59,7 @@ public class Command {
         return switch (state) {
             case NEW -> String.format("Command(id='%s', uuid='%s')%nHas been saved.", id, uuid);
             case ERROR -> String.format("Command(id='%s', uuid='%s')%nEnded with an error:%n%s", id, uuid, error);
-            default -> String.format("Command(id='%s', uuid='%s')%nWith content:%n'%s'", id, uuid, content);
+            default -> String.format("Command(id='%s', uuid='%s')%nWith content:%n%s", id, uuid, content);
         };
     }
 
