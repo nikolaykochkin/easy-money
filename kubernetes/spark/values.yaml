@@ -7,6 +7,7 @@ master:
     -Dspark.hadoop.fs.s3a.endpoint=http://minio:9000
     -Dspark.hadoop.fs.s3a.endpoint.region=local
     -Dspark.hadoop.fs.s3a.path.style.access=true
+    --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
   ## @param master.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for master nodes
   ##
   extraEnvVarsCM: "spark-config-env"
@@ -23,6 +24,7 @@ worker:
     -Dspark.hadoop.fs.s3a.endpoint=http://minio:9000
     -Dspark.hadoop.fs.s3a.endpoint.region=local
     -Dspark.hadoop.fs.s3a.path.style.access=true
+    --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
   ## @param worker.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for worker nodes
   ##
   extraEnvVarsCM: "spark-config-env"

@@ -13,8 +13,6 @@ RUN mkdir -p build/dependency && (cd build/dependency; jar -xf ../libs/*-SNAPSHO
 
 FROM eclipse-temurin:17-jre
 
-VOLUME /tmp
-
 ARG DEPENDENCY=/workspace/app/build/dependency
 
 ARG SERVER_PORT

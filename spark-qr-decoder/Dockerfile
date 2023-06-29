@@ -9,10 +9,9 @@ COPY . .
 
 RUN sbt clean assembly
 
-FROM apache/spark:3.4.0
+FROM bitnami/spark:3.4
 
-ARG SPARK_HOME
-ENV WORK_DIR=${SPARK_HOME}/work-dir
+ENV WORK_DIR=${SPARK_HOME}/work
 
 ARG MASTER
 ARG KAFKA_BOOTSTRAP
@@ -35,7 +34,7 @@ COPY --from=build /workspace/app/target/scala-2.12/spark-qr-image-processor.jar 
 
 ENTRYPOINT ../bin/spark-submit \
       --class ru.yandex.practicum.de.kk91.QRImageProcessor \
-      --packages org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262,org.apache.spark:spark-sql-kafka-0-10_2.12:3.4.0,org.apache.kafka:kafka-clients:3.3.2,org.apache.commons:commons-pool2:2.11.1,org.apache.spark:spark-tags_2.12:3.4.0,org.apache.spark:spark-token-provider-kafka-0-10_2.12:3.4.0\
+      --packages org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262 \
       --master $MASTER \
       --deploy-mode cluster \
       --conf spark.hadoop.fs.s3a.access.key=$AWS_ACCESS_KEY_ID \

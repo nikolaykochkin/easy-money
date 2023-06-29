@@ -8,6 +8,7 @@
 
 ```dotenv
 SERVER_PORT="80"
+DOWNLOADS_PATH=/tmp/downloads
 
 BOT_TOKEN=""
 BOT_NAME="@my_shiny_public_bot"

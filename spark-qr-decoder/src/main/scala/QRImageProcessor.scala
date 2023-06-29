@@ -54,7 +54,6 @@ object QRImageProcessor {
         (batchDF: DataFrame, batchId: Long) =>
           if (!batchDF.isEmpty) {
             batchDF.persist()
-            batchDF.show(truncate = false)
 
             val attachments = explodeCommandAttachments(batchDF.as[(String, Command)], s3path)
             val urls = attachments.map(_.getAs[String]("origin")).collect()
