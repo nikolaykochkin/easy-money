@@ -77,6 +77,7 @@ public class Parser {
                 .paymentMethod(paymentMethod)
                 .url(url)
                 .currency(EURO)
+                .totalPrice(invoiceMe.getTotalPrice())
                 .build();
     }
 

@@ -9,9 +9,12 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import ru.yandex.practicum.de.kk91.easymoney.data.user.User;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Currency;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Data
@@ -22,6 +25,10 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "invoice")
 public class Invoice {
+
+    private static final String REPORT_TEMPLATE =
+            "Invoice%nID: %d%nDate: %s%nURL: %s%nPaid by: %s%nCurrency: %s%nSeller: %s%nAccount: %s%nTOTAL: %.2f";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,11 +37,11 @@ public class Invoice {
     private Instant dateTime;
     private String externalId;
     private String url;
-    @ToString.Exclude
     @JdbcTypeCode(SqlTypes.JSON)
     private String content;
     private String paymentMethod;
     private Currency currency;
+    private BigDecimal totalPrice;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "seller_id")
@@ -44,12 +51,10 @@ public class Invoice {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "invoice_id")
     private List<InvoiceItem> invoiceItems;
 
-    @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "invoice_id")
     private List<Transaction> transactions;
@@ -63,4 +68,12 @@ public class Invoice {
 
     @LastModifiedDate
     private Instant lastModifiedDate;
+
+    public String getUserReport() {
+        String account = Optional.ofNullable(getAccount())
+                .map(Account::getName)
+                .orElse("unknown");
+        String date = DateTimeFormatter.ISO_INSTANT.format(dateTime);
+        return String.format(REPORT_TEMPLATE, id, date, url, paymentMethod, currency, seller.getName(), account, totalPrice);
+    }
 }

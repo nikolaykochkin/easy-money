@@ -3,8 +3,8 @@ ThisBuild / scalaVersion := "2.12.18"
 ThisBuild / organization := "ru.yandex.practicum.de.kk91"
 
 ThisBuild / assemblyMergeStrategy := {
-  case "META-INF/native-image/linux-x86_64/jnijavacpp/jni-config.json" => MergeStrategy.discard
-  case "META-INF/native-image/linux-x86_64/jnijavacpp/reflect-config.json" => MergeStrategy.discard
+  case PathList("META-INF", "native-image", ps @ _*) if ps.last endsWith "jni-config.json" => MergeStrategy.discard
+  case PathList("META-INF", "native-image", ps @ _*) if ps.last endsWith "reflect-config.json" => MergeStrategy.discard
   case "META-INF/substrate/config/reflectionconfig.json" => MergeStrategy.discard
   case "META-INF/versions/9/module-info.class" => MergeStrategy.discard
   case PathList("module-info.class") => MergeStrategy.discard
@@ -21,7 +21,7 @@ val javacppVersion = "1.5.9"
 val awsSdkVersion = "1.12.262"
 val hadoopAwsVersion = "3.3.4"
 
-val platform = "linux-x86_64"
+val platform = org.bytedeco.javacpp.Loader.Detector.getPlatform
 
 lazy val root = (project in file("."))
   .settings(
@@ -42,7 +42,7 @@ lazy val root = (project in file("."))
 
     Compile / run := Defaults.runTask(Compile / fullClasspath, Compile / run / mainClass, Compile / run / runner).evaluated,
 
-    javaOptions ++= Seq("-Xms512M", "-Xmx2048M", "-XX:MaxPermSize=2048M", "-XX:+CMSClassUnloadingEnabled"),
+    javaOptions ++= Seq("-Xms512M", "-Xmx2048M"),
     scalacOptions ++= Seq("-deprecation", "-unchecked"),
 
     libraryDependencies ++= Seq(

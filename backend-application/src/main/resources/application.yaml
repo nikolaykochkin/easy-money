@@ -27,7 +27,7 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9094}
     consumer:

@@ -119,6 +119,7 @@ CREATE TABLE IF NOT EXISTS invoice
     url                VARCHAR,
     content            JSONB,
     currency           VARCHAR                      NOT NULL,
+    total_price        NUMERIC(14, 4)               NOT NULL,
     payment_method     VARCHAR                      NOT NULL,
     account_id         BIGINT REFERENCES account (id),
     seller_id          BIGINT REFERENCES counterparty (id),

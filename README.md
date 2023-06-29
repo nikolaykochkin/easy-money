@@ -4,7 +4,32 @@
 
 ## TL;DR
 
-### Start:
+### Создаем в корне проекта .env файл:
+
+```dotenv
+SERVER_PORT="80"
+
+BOT_TOKEN=""
+BOT_NAME="@my_shiny_public_bot"
+
+KAFKA_BOOTSTRAP="kafka:9092"
+
+DB_DATABASE="easy-money"
+DB_URL="jdbc:postgresql://postgres:5432/${DB_DATABASE}"
+DB_USER="admin"
+DB_PASS="P@ssw0rd"
+
+MINIO_ROOT_USER="admin"
+MINIO_ROOT_PASSWORD="P@ssw0rd"
+
+AWS_REGION="local"
+AWS_BUCKET="easy-money"
+AWS_S3_ENDPOINT="http://minio:9000"
+AWS_ACCESS_KEY_ID=""
+AWS_SECRET_ACCESS_KEY=""
+```
+
+### Запускаем с флагом сборки:
 
 ```shell
 docker compose -f Docker-compose.yaml -p easy-money up -d --build

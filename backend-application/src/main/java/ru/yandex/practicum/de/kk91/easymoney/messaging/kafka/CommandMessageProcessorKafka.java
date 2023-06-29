@@ -151,8 +151,8 @@ public class CommandMessageProcessorKafka {
             return;
         }
 
-        command.setContent("Invoice Has been saved.\n" + savedInvoice.toString());
-        command.setState(CommandState.CLOSED);
+        command.setContent("Invoice Has been saved.\n" + savedInvoice.getUserReport());
+        command.setState(CommandState.DONE);
 
         Command savedCommand = commandService.saveCommand(command);
 

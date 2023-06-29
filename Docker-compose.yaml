@@ -71,7 +71,7 @@ services:
       BOT_TOKEN: ${BOT_TOKEN}
       BOT_NAME: ${BOT_NAME}
     ports:
-      - ${SERVER_PORT}
+      - ${SERVER_PORT}:${SERVER_PORT}
     networks:
       - easy-money-net
     volumes:
@@ -92,6 +92,8 @@ services:
       - "spark-work-dir:/opt/spark/work-dir"
     environment:
       SPARK_HOME: /opt/spark
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     networks:
       - easy-money-net
     entrypoint: "/usr/bin/tini -s -- /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master"
@@ -107,11 +109,14 @@ services:
       - "spark-work-dir:/opt/spark/work-dir"
     environment:
       SPARK_HOME: /opt/spark
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     networks:
       - easy-money-net
     depends_on:
       - spark-master
     entrypoint: "/usr/bin/tini -s -- /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker --port 7000 spark://spark-master:7077"
+    restart: always
 
   spark-builder:
     build:

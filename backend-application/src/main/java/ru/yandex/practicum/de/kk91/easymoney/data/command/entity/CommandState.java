@@ -10,6 +10,6 @@ public enum CommandState {
     INVOICE_PARSING,
     REPORT_GENERATING,
     DRAFT_CONFIRMATION,
-    CLOSED,
+    DONE,
     ERROR
 }

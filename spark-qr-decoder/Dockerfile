@@ -1,4 +1,4 @@
-FROM sbtscala/scala-sbt:eclipse-temurin-jammy-11.0.17_8_1.9.0_2.12.18 as build
+FROM sbtscala/scala-sbt:eclipse-temurin-jammy-17.0.5_8_1.9.0_2.12.18 as build
 
 WORKDIR /workspace/app
 
@@ -35,6 +35,7 @@ COPY --from=build /workspace/app/target/scala-2.12/spark-qr-image-processor.jar 
 
 ENTRYPOINT ../bin/spark-submit \
       --class ru.yandex.practicum.de.kk91.QRImageProcessor \
+      --packages org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262,org.apache.spark:spark-sql-kafka-0-10_2.12:3.4.0,org.apache.kafka:kafka-clients:3.3.2,org.apache.commons:commons-pool2:2.11.1,org.apache.spark:spark-tags_2.12:3.4.0,org.apache.spark:spark-token-provider-kafka-0-10_2.12:3.4.0\
       --master $MASTER \
       --deploy-mode cluster \
       --conf spark.hadoop.fs.s3a.access.key=$AWS_ACCESS_KEY_ID \
@@ -44,8 +45,3 @@ ENTRYPOINT ../bin/spark-submit \
       --conf spark.hadoop.fs.s3a.path.style.access=true \
       --verbose \
       file://$WORK_DIR/spark-qr-image-processor.jar \
-      $MASTER \
-      $KAFKA_BOOTSTRAP \
-      $PHOTO_INPUT_TOPIC \
-      $PHOTO_OUTPUT_TOPIC \
-      $AWS_S3_BUCKET

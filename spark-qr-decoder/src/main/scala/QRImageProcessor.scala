@@ -19,9 +19,9 @@ object QRImageProcessor {
 
   def main(args: Array[String]): Unit = {
 
-    val kafkaServer = sys.env.get("KAFKA_SERVERS") match {
+    val kafkaServer = sys.env.get("KAFKA_BOOTSTRAP") match {
       case Some(value) => value
-      case None => throw new IllegalStateException("Environment variable KAFKA_SERVERS must be set.")
+      case None => throw new IllegalStateException("Environment variable KAFKA_BOOTSTRAP must be set.")
     }
 
     val inputTopic = sys.env.getOrElse("INPUT_TOPIC", "spark-photo")
@@ -31,6 +31,7 @@ object QRImageProcessor {
     val s3path = s"s3a://$s3Bucket/"
 
     val spark = SparkSession.builder
+      .master("local")
       .appName("QR Image Processor")
       .config("spark.sql.streaming.kafka.useDeprecatedOffsetFetching", value = true)
       .getOrCreate()
