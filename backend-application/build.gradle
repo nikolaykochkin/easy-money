@@ -35,6 +35,8 @@ dependencies {
 
     implementation 'org.springframework.kafka:spring-kafka'
 
+    implementation 'org.flywaydb:flyway-core'
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     runtimeOnly 'org.postgresql:postgresql'
