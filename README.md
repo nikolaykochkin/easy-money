@@ -119,11 +119,9 @@ flowchart
     Tg <--> Bot
     U <--> D
     subgraph Cloud
-        
         D(((dashboard)))
-        DB[(Postgres)]
-        D <--> DB
         subgraph Backend Kubernetes
+            DB[(Postgres)]
             K>Kafka]
             subgraph Application
                 Bot
@@ -152,11 +150,11 @@ flowchart
             MG <--> K
             K <--> Spark
         end
+        D <--> DB
         L --> S3
         S3 --> Spark
         S3[\ File Storage /]
         R <--> DB
-        
     end
     P <--> Web((( HTTP\nmapr.tax.gov.me )))
 ```
