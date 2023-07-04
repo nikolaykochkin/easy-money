@@ -7,13 +7,11 @@ replicaCount: 1
 image:
   repository: cr.yandex/crpd5j1aq5s8uqiglqn0/backend-application
   pullPolicy: Always
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
 
 config:
   environment:
-    AWS_S3_ENDPOINT: "http://minio:9000"
-    AWS_REGION: "local"
+    AWS_S3_ENDPOINT: "https://storage.yandexcloud.net"
+    AWS_REGION: "ru-central1"
     DB_URL: "jdbc:postgresql://postgresql:5432/easy-money"
     DB_USER: "admin"
     KAFKA_BOOTSTRAP: "kafka:9092"

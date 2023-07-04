@@ -1,11 +1,27 @@
+
+## Bitnami Spark image version
+## ref: https://hub.docker.com/r/bitnami/spark/tags/
+## @param image.registry Spark image registry
+## @param image.repository Spark image repository
+## @param image.tag Spark image tag (immutable tags are recommended)
+## @param image.digest Spark image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+## @param image.pullPolicy Spark image pull policy
+## @param image.pullSecrets Specify docker-registry secret names as an array
+## @param image.debug Enable image debug mode
+##
+image:
+  registry: docker.io
+  repository: bitnami/spark
+  tag: 3.4
+
 ## Spark master specific configuration
 ##
 master:
   ## @param master.configOptions Use a string to set the config options for in the form "-Dx=y"
   ##
   configOptions:
-    -Dspark.hadoop.fs.s3a.endpoint=http://minio:9000
-    -Dspark.hadoop.fs.s3a.endpoint.region=local
+    -Dspark.hadoop.fs.s3a.endpoint=https://storage.yandexcloud.net
+    -Dspark.hadoop.fs.s3a.endpoint.region=ru-central1
     -Dspark.hadoop.fs.s3a.path.style.access=true
     --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
   ## @param master.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for master nodes
@@ -21,8 +37,8 @@ worker:
   ## @param worker.configOptions Set extra options to configure the worker in the form `-Dx=y`
   ##
   configOptions:
-    -Dspark.hadoop.fs.s3a.endpoint=http://minio:9000
-    -Dspark.hadoop.fs.s3a.endpoint.region=local
+    -Dspark.hadoop.fs.s3a.endpoint=https://storage.yandexcloud.net
+    -Dspark.hadoop.fs.s3a.endpoint.region=ru-central1
     -Dspark.hadoop.fs.s3a.path.style.access=true
     --add-exports=java.base/sun.nio.ch=ALL-UNNAMED
   ## @param worker.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for worker nodes
@@ -34,10 +50,3 @@ worker:
   ## @param worker.replicaCount Number of spark workers (will be the minimum number when autoscaling is enabled)
   ##
   replicaCount: 1
-
-## Service parameters
-##
-service:
-  ## @param service.type Kubernetes Service type
-  ##
-  type: LoadBalancer

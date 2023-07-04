@@ -29,3 +29,16 @@ auth:
   ## @param auth.password Password for the custom user to create. Ignored if `auth.existingSecret` is provided
   ##
   database: easy-money
+
+## @section PostgreSQL Primary parameters
+##
+primary:
+  ## PostgreSQL Primary service configuration
+  ##
+  service:
+    ## @param primary.service.type Kubernetes Service type
+    ##
+    type: LoadBalancer
+    ## @param primary.service.annotations Annotations for PostgreSQL primary service
+    ##
+    annotations: { }

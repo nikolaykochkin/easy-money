@@ -1,3 +1,18 @@
+## Bitnami MinIO&reg; image version
+## ref: https://hub.docker.com/r/bitnami/minio/tags/
+## @param image.registry MinIO&reg; image registry
+## @param image.repository MinIO&reg; image repository
+## @param image.tag MinIO&reg; image tag (immutable tags are recommended)
+## @param image.digest MinIO&reg; image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+## @param image.pullPolicy Image pull policy
+## @param image.pullSecrets Specify docker-registry secret names as an array
+## @param image.debug Specify if debug logs should be enabled
+##
+image:
+  registry: docker.io
+  repository: bitnami/minio
+  tag: 2023
+
 ## @param mode MinIO&reg; server mode (`standalone` or `distributed`)
 ## ref: https://docs.minio.io/docs/distributed-minio-quickstart-guide
 ##
@@ -17,10 +32,3 @@ auth:
 ## defaultBuckets: "my-bucket, my-second-bucket"
 ##
 defaultBuckets: "easy-money"
-
-## MinIO&reg; Service properties
-##
-service:
-  ## @param service.type MinIO&reg; service type
-  ##
-  type: LoadBalancer
